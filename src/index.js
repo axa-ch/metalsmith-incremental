@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 
@@ -5,6 +6,9 @@ let modifiedFiles = {}
 let modifiedDirs = []
 let isReady = false
 
+const log = (message) => {
+  console.log(`[${chalk.green('metalsmith-incremental')}] ${message}`)
+}
 const isModifiedDir = (path) => {
   for (let i = 0, l = modifiedDirs.length; i < l; i++) {
     if (modifiedDirs[i].indexOf(path) === 0) {
@@ -87,19 +91,24 @@ metalsmithIncremental.watch = (metalsmith) => {
     cwd: source,
   })
   const debouncedBuild = debounce(() => {
+    log('start')
     metalsmith.build((err) => {
       if (err) throw err
 
       modifiedFiles = {}
       modifiedDirs = []
+
+      log('done')
     })
   }, 100)
   const modifiedFile = (path) => {
     modifiedFiles[path] = true
+    log(`${chalk.yellow(path)} changed`)
     debouncedBuild()
   }
   const modifiedDir = (path) => {
     modifiedDirs.push(path)
+    log(`${chalk.yellow(path)} changed`)
     debouncedBuild()
   }
 
