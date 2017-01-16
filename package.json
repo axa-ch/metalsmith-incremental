@@ -1,0 +1,24 @@
+{
+  "name": "metalsmith-incremental",
+  "version": "0.0.0",
+  "description": "Faster incremental builds for MetalSmith",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axa-ch/metalsmith-incremental.git"
+  },
+  "keywords": [
+    "metalsmith",
+    "incremental",
+    "builds"
+  ],
+  "author": "AXA Versicherungen AG",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axa-ch/metalsmith-incremental/issues"
+  },
+  "homepage": "https://github.com/axa-ch/metalsmith-incremental#readme"
+}
