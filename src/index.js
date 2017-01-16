@@ -80,10 +80,11 @@ const metalsmithIncremental = plugin => (files, metalsmith, done) => {
   }
 }
 
-metalsmithIncremental.watch = (metalsmith, cwd) => {
-  const watcher = chokidar.watch(metalsmith.source(), {
+metalsmithIncremental.watch = (metalsmith) => {
+  const source = metalsmith.source()
+  const watcher = chokidar.watch(source, {
     ignoreInitial: true,
-    cwd,
+    cwd: source,
   })
   const debouncedBuild = debounce(() => {
     metalsmith.build((err) => {
