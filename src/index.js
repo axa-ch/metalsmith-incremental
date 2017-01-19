@@ -6,6 +6,9 @@ import depGraph from './lib/dep-graph'
 import isModifiedDir from './lib/is-modified-dir'
 import log from './lib/log'
 
+const defaults = {
+  debouce: 100,
+}
 let modifiedFiles = {}
 let modifiedDirs = []
 let isReady = false
@@ -77,33 +80,19 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
   }
 }
 
-metalsmithIncremental.watch = (metalsmith) => {
+metalsmithIncremental.watch = (metalsmith, options) => {
+  // eslint-disable-next-line no-param-reassign
+  options = {
+    ...defaults,
+    ...options,
+  }
+
   const source = metalsmith.source()
   const watcher = chokidar.watch(source, {
     ignoreInitial: true,
     cwd: source,
   })
-  const debouncedBuild = debounce(() => {
-    log('start')
-    metalsmith.build((err) => {
-      if (err) throw err
-
-      modifiedFiles = {}
-      modifiedDirs = []
-
-      log('done')
-    })
-  }, 100)
-  const modifiedFile = (path) => {
-    modifiedFiles[path] = true
-    log(`${chalk.yellow(path)} changed`)
-    debouncedBuild()
-  }
-  const modifiedDir = (path) => {
-    modifiedDirs.push(path)
-    log(`${chalk.yellow(path)} changed`)
-    debouncedBuild()
-  }
+  const debouncedBuild = debounce(triggerBuild, options.debounce)
 
   process.on('SIGTERM', stopWatching)
   process.on('SIGINT', stopWatching)
@@ -117,6 +106,30 @@ metalsmithIncremental.watch = (metalsmith) => {
     .on('ready', () => {
       isReady = true
     })
+
+  function triggerBuild() {
+    log('start')
+    metalsmith.build((err) => {
+      if (err) throw err
+
+      modifiedFiles = {}
+      modifiedDirs = []
+
+      log('done')
+    })
+  }
+
+  function modifiedFile(path) {
+    modifiedFiles[path] = true
+    log(`${chalk.yellow(path)} changed`)
+    debouncedBuild()
+  }
+
+  function modifiedDir(path) {
+    modifiedDirs.push(path)
+    log(`${chalk.yellow(path)} changed`)
+    debouncedBuild()
+  }
 
   function stopWatching() {
     watcher.close()
