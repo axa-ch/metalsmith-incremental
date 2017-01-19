@@ -27,7 +27,7 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
   }
 
   // check dependencies first
-  depGraph(files, modifiedFiles, modifiedDirs, baseDir, depCheck)
+  depGraph(files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCheck)
 
   const backupFiles = {}
   let paths = Object.keys(files)
