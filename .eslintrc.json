@@ -12,7 +12,9 @@
     "dot-notation": "off",
     "max-len": ["warn", 140, 2],
     "no-cond-assign": ["error", "except-parens"],
+    "no-continue": "warn",
     "no-else-return": "warn",
+    "no-plusplus": "warn",
     "no-use-before-define": ["error", { "functions": false, "classes": false }],
     "semi": ["error", "never"],
     "quote-props": ["error", "consistent"]
