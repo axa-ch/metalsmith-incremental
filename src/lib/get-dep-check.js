@@ -1,13 +1,13 @@
 import path from 'path'
 import isRegex from 'is-regex'
 
-const reDepHash = {
+const depCheckDefault = {
   pug: /include\s+([^\s]+)/mg,
 }
 
-const getDepCheck = (file, reDep) => {
-  if (!isRegex(reDep)) {
-    return reDep
+const getDepCheck = (file, depCheck) => {
+  if (typeof depCheck === 'function' || isRegex(depCheck)) {
+    return depCheck
   }
 
   const extension = path.extname(file)
@@ -19,14 +19,15 @@ const getDepCheck = (file, reDep) => {
       break
 
     default:
-      key = extension.splice(1)
+      key = extension.slice(1)
   }
 
-  if (typeof reDep === 'object' && (typeof reDep[key] === 'function' || isRegex(reDep[key]))) {
-    return reDep[key]
+  if (typeof depCheck === 'object' &&
+    (typeof depCheck[key] === 'function' || isRegex(depCheck[key]))) {
+    return depCheck[key]
   }
 
-  return reDepHash[key]
+  return depCheckDefault[key]
 }
 
 export default getDepCheck
