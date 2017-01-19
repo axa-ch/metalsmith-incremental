@@ -1,24 +1,21 @@
 import path from 'path'
-import isRegex from 'is-regex'
 
 import isModifiedDir from './is-modified-dir'
-
-const reDepPug = /include\s+([^\s]+)/mg
+import getDepRegex from './get-dep-regex'
 
 const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, reDep) => {
   const paths = Object.keys(files)
   const dependencies = {}
 
-  if (!isRegex(reDep)) {
-    // eslint-disable-next-line no-param-reassign
-    reDep = reDepPug
-  }
-
   for (let i = 0, l = paths.length; i < l; i++) {
     const filePath = paths[i]
 
+    // eslint-disable-next-line no-param-reassign
+    reDep = getDepRegex(filePath, reDep)
+
+    // no need to check files without regex
     // no need to check modified files / dirs
-    if (modifiedFiles[filePath] || isModifiedDir(filePath, modifiedDirs)) {
+    if (!reDep || modifiedFiles[filePath] || isModifiedDir(filePath, modifiedDirs)) {
       paths.splice(i, 1)
       l--
       i--
