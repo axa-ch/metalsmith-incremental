@@ -26,6 +26,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
     const file = files[filePath]
     let match
     let dependencies = []
+    let modifiedFilesList
 
     // collect matched dependcies
     if (typeof depCheck === 'function') {
@@ -46,7 +47,9 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
         dependency = path.join(path.dirname(filePath), dependency)
       }
 
-      if (modifiedFiles[dependency] || isModifiedDir(path, modifiedDirs)) {
+      if (modifiedFiles[dependency]
+        || isModifiedDir(dependency, modifiedFilesList || (modifiedFilesList = Object.keys(modifiedFiles)))
+        || isModifiedDir(dependency, modifiedDirs)) {
         // yes this is changed by reference
         // eslint-disable-next-line no-param-reassign
         modifiedFiles[filePath] = true
