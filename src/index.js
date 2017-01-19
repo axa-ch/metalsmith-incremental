@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
+import minimatch from 'minimatch'
 
 import depGraph from './lib/dep-graph'
 import isModifiedDir from './lib/is-modified-dir'
@@ -11,6 +12,7 @@ const defaults = {
 }
 let modifiedFiles = {}
 let modifiedDirs = []
+let forceGlobs = []
 let isReady = false
 
 const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith, done) => {
@@ -26,11 +28,23 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
     return
   }
 
-  // check dependencies first
-  depGraph(files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCheck)
-
   const backupFiles = {}
   let paths = Object.keys(files)
+
+  // first add forced globs
+  if (forceGlobs.length) {
+    forceGlobs.each((glob) => {
+      paths.filter(minimatch.filter(glob))
+        .each((path) => {
+          modifiedFiles[path] = true
+
+          log(`${chalk.yellow(path)} force update`)
+        })
+    })
+  }
+
+  // second check dependencies
+  depGraph(files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCheck)
 
   // filter non-modified files
   for (let i = 0, l = paths.length; i < l; i++) {
@@ -87,6 +101,18 @@ metalsmithIncremental.watch = (metalsmith, options) => {
     ...options,
   }
 
+  if (typeof options.path === 'string') {
+    // eslint-disable-next-line no-param-reassign
+    options.path = {
+      [options.path]: options.path,
+    }
+  }
+
+  if (typeof options.dounce !== 'number') {
+    // eslint-disable-next-line no-param-reassign
+    options.dounce = defaults.debouce
+  }
+
   const source = metalsmith.source()
   const watcher = chokidar.watch(source, {
     ignoreInitial: true,
@@ -109,11 +135,24 @@ metalsmithIncremental.watch = (metalsmith, options) => {
 
   function triggerBuild() {
     log('start')
+
+    if (options.paths) {
+      const globs = Object.keys(options.paths)
+      const modifiedFilesList = Object.keys(modifiedFiles)
+
+      globs.each((glob) => {
+        if (minimatch.match(modifiedFilesList, glob)) {
+          forceGlobs.push(options.paths[glob])
+        }
+      })
+    }
+
     metalsmith.build((err) => {
       if (err) throw err
 
       modifiedFiles = {}
       modifiedDirs = []
+      forceGlobs = []
 
       log('done')
     })
