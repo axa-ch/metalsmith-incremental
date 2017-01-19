@@ -1,21 +1,21 @@
 import path from 'path'
+import isRegex from 'is-regex'
 
 import isModifiedDir from './is-modified-dir'
-import getDepRegex from './get-dep-regex'
+import getDepCheck from './get-dep-check'
 
-const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, reDep) => {
+const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
   const paths = Object.keys(files)
-  const dependencies = {}
 
   for (let i = 0, l = paths.length; i < l; i++) {
     const filePath = paths[i]
 
     // eslint-disable-next-line no-param-reassign
-    reDep = getDepRegex(filePath, reDep)
+    depCheck = getDepCheck(filePath, depCheck)
 
     // no need to check files without regex
     // no need to check modified files / dirs
-    if (!reDep || modifiedFiles[filePath] || isModifiedDir(filePath, modifiedDirs)) {
+    if (!depCheck || modifiedFiles[filePath] || isModifiedDir(filePath, modifiedDirs)) {
       paths.splice(i, 1)
       l--
       i--
@@ -24,13 +24,22 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, reDep) => {
 
     const file = files[filePath]
     let match
-    let dependency
+    let dependencies = []
 
-    while ((match = reDep.exec(file.contents)) !== null) {
-      dependency = match[1]
+    // collect matched dependcies
+    if (typeof depCheck === 'function') {
+      dependencies = depCheck(file, baseDir)
+    } else {
+      while ((match = depCheck.exec(file.contents)) !== null) {
+        dependencies.push(match[1])
+      }
+    }
+
+    for (let j = 0, k = dependencies.length; j < k; j++) {
+      let dependency = dependencies[j]
 
       // absolute to optional baseDir
-      if (baseDir && dependencies.charAt(0) === path.sep) {
+      if (baseDir && dependency.charAt(0) === path.sep) {
         dependency = path.join(baseDir, dependency)
       } else { // relative include/import/require whatever
         dependency = path.join(path.dirname(filePath), dependency)
@@ -45,6 +54,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, reDep) => {
         paths.splice(i, 1)
         l--
         i = 0
+        continue
       }
     }
   }
