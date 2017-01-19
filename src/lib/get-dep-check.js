@@ -2,7 +2,7 @@ import path from 'path'
 import isRegex from 'is-regex'
 
 const depCheckDefault = {
-  pug: /include\s+([^\s]+)/mg,
+  pug: /(?:include|extends)\s+([^\s]+)/mg,
 }
 
 const getDepCheck = (file, depCheck) => {
