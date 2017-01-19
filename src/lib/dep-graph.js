@@ -5,7 +5,7 @@ import isModifiedDir from './is-modified-dir'
 import getDepCheck from './get-dep-check'
 import log from './log'
 
-const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
+const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCheck) => {
   const paths = Object.keys(files)
 
   for (let i = 0, l = paths.length; i < l; i++) {
@@ -28,7 +28,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
     let dependencies = []
     let modifiedFilesList
 
-    // collect matched dependcies
+    // collect matched dependencies
     if (typeof depCheck === 'function') {
       dependencies = depCheck(file, baseDir)
     } else {
@@ -43,6 +43,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
       // absolute to optional baseDir
       if (baseDir && dependency.charAt(0) === path.sep) {
         dependency = path.join(baseDir, dependency)
+        dependency = path.relative(metalsmith.source(), dependency)
       } else { // relative include/import/require whatever
         dependency = path.join(path.dirname(filePath), dependency)
       }
@@ -60,7 +61,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
         i = 0
 
         log(`${chalk.yellow(filePath)} depends on ${chalk.blue(dependency)}`)
-        continue
+        break
       }
     }
   }
