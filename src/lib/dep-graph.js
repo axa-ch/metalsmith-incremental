@@ -1,5 +1,4 @@
 import path from 'path'
-import isRegex from 'is-regex'
 
 import isModifiedDir from './is-modified-dir'
 import getDepCheck from './get-dep-check'
