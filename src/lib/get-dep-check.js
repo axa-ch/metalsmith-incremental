@@ -5,7 +5,7 @@ const reDepHash = {
   pug: /include\s+([^\s]+)/mg,
 }
 
-const getDepRegex = (file, reDep) => {
+const getDepCheck = (file, reDep) => {
   if (!isRegex(reDep)) {
     return reDep
   }
@@ -22,11 +22,11 @@ const getDepRegex = (file, reDep) => {
       key = extension.splice(1)
   }
 
-  if (typeof reDep === 'object' && isRegex(reDep[key])) {
+  if (typeof reDep === 'object' && (typeof reDep[key] === 'function' || isRegex(reDep[key]))) {
     return reDep[key]
   }
 
   return reDepHash[key]
 }
 
-export default getDepRegex
+export default getDepCheck
