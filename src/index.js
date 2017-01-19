@@ -2,6 +2,9 @@ import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 
+import depGraph from './lib/dep-graph'
+import isModifiedDir from './lib/is-modified-dir'
+
 let modifiedFiles = {}
 let modifiedDirs = []
 let isReady = false
@@ -9,17 +12,8 @@ let isReady = false
 const log = (message) => {
   console.log(`[${chalk.green('metalsmith-incremental')}] ${message}`)
 }
-const isModifiedDir = (path) => {
-  for (let i = 0, l = modifiedDirs.length; i < l; i++) {
-    if (modifiedDirs[i].indexOf(path) === 0) {
-      return true
-    }
-  }
 
-  return false
-}
-
-const metalsmithIncremental = plugin => (files, metalsmith, done) => {
+const metalsmithIncremental = (plugin, baseDir, reDep) => (files, metalsmith, done) => {
   // only enable incremental builds after first build
   if (!isReady) {
     if (plugin.length === 3) {
@@ -32,6 +26,9 @@ const metalsmithIncremental = plugin => (files, metalsmith, done) => {
     return
   }
 
+  // check dependencies first
+  depGraph(files, modifiedFiles, modifiedDirs, baseDir, reDep)
+
   const backupFiles = {}
   let paths = Object.keys(files)
 
@@ -39,8 +36,7 @@ const metalsmithIncremental = plugin => (files, metalsmith, done) => {
   for (let i = 0, l = paths.length; i < l; i++) {
     const path = paths[i]
 
-    // eslint-disable-next-line no-continue
-    if (modifiedFiles[path] || isModifiedDir(path)) continue
+    if (modifiedFiles[path] || isModifiedDir(path, modifiedDirs)) continue
 
     backupFiles[path] = files[path]
     // eslint-disable-next-line no-param-reassign
