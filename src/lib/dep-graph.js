@@ -28,7 +28,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCh
     let dependencies = []
     let modifiedFilesList
 
-    // collect matched dependcies
+    // collect matched dependencies
     if (typeof depCheck === 'function') {
       dependencies = depCheck(file, baseDir)
     } else {
