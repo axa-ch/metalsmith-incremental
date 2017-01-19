@@ -61,7 +61,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCh
         i = 0
 
         log(`${chalk.yellow(filePath)} depends on ${chalk.blue(dependency)}`)
-        continue
+        break
       }
     }
   }
