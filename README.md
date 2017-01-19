@@ -39,14 +39,14 @@ if(process.env.NODE_ENV === 'development') {
 3. In case your plugin wraps content which could include other content (dependencies), you can specify custom `RegExp` or `Function`, which should extract those depended files and occashionally rebuild them too.
 
 ````js
-// wrap slow plugins with RegEx
+// dependencies with RegEx
 metalsmith.use(incremental(slowPlugin()), /^import ["'](.*)['"]$/mg)
 ````
 
 **Important:** Your RegEx has to define one capturing group (which holds the dependency path data), match global and multiline.
 
 ````js
-// wrap slow plugins with RegEx
+// dependencies with Function
 metalsmith.use(incremental(slowPlugin()), (file, baseDir) => {
   const dependencies = []
   // do your custom magic to find dependencies
@@ -67,6 +67,14 @@ if(process.env.NODE_ENV === 'development') {
 **Note:** You have to pass your current metalsmith instance to watch.
 
 **Important:** This plugin is designed to be used only with MetalSmith plugins who operate on file basis. Other plugins who depend on `metadata`, etc will not benefit from this or may break.
+
+# Options
+
+The following options hash can be passed to `incremental.watch()` as second argument.
+
+## debounce
+
+How many milliseconds build should be debounced. [default: `100`]
 
 # Credit/Inspiration
 After we had very long metalsmith builds during development, it was time to seek for change.
