@@ -58,13 +58,17 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
   }
 
   // execute plugin
-  if (plugin.length === 3) {
-    plugin(files, metalsmith, (err) => {
-      cleanup(err)
-    })
-  } else {
-    plugin.apply(this, arguments)
-    cleanup()
+  try {
+    if (plugin.length === 3) {
+      plugin(files, metalsmith, (err) => {
+        cleanup(err)
+      })
+    } else {
+      plugin.apply(this, arguments)
+      cleanup()
+    }
+  } catch (err) {
+    console.log(err)
   }
 
   // cleaup
