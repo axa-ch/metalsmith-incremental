@@ -33,9 +33,9 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
 
   // first add forced globs
   if (forceGlobs.length) {
-    forceGlobs.each((glob) => {
+    forceGlobs.forEach((glob) => {
       paths.filter(minimatch.filter(glob))
-        .each((path) => {
+        .forEach((path) => {
           modifiedFiles[path] = true
 
           log(`${chalk.yellow(path)} force update`)
@@ -140,7 +140,7 @@ metalsmithIncremental.watch = (metalsmith, options) => {
       const globs = Object.keys(options.paths)
       const modifiedFilesList = Object.keys(modifiedFiles)
 
-      globs.each((glob) => {
+      globs.forEach((glob) => {
         if (minimatch.match(modifiedFilesList, glob)) {
           forceGlobs.push(options.paths[glob])
         }
