@@ -74,7 +74,23 @@ The following options hash can be passed to `incremental.watch()` as second argu
 
 ## debounce
 
-How many milliseconds build should be debounced. [default: `100`]
+How many milliseconds build should be debounced (optional). [default: `100`]
+
+## paths
+
+You can pass a hash of glob maps, which forces to update some other files if the key glob matches (optional).
+
+````js
+{
+  'file(s) to watch': 'file(s) to rebuild'
+}
+````
+
+````js
+{
+  'templates/**/*': '**/*', // every templates changed will trigger a rebuild of all files
+}
+````
 
 # Credit/Inspiration
 After we had very long metalsmith builds during development, it was time to seek for change.
