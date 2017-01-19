@@ -26,14 +26,8 @@ const metalsmithIncremental = (plugin, baseDir, reDep) => (files, metalsmith, do
     return
   }
 
-  // check dependencies
-  if (baseDir) {
-    if (reDep) {
-      depGraph(files, modifiedFiles, modifiedDirs, baseDir, reDep)
-    } else {
-      depGraph(files, modifiedFiles, modifiedDirs, baseDir)
-    }
-  }
+  // check dependencies first
+  depGraph(files, modifiedFiles, modifiedDirs, baseDir, reDep)
 
   const backupFiles = {}
   let paths = Object.keys(files)
@@ -42,7 +36,6 @@ const metalsmithIncremental = (plugin, baseDir, reDep) => (files, metalsmith, do
   for (let i = 0, l = paths.length; i < l; i++) {
     const path = paths[i]
 
-    // eslint-disable-next-line no-continue
     if (modifiedFiles[path] || isModifiedDir(path, modifiedDirs)) continue
 
     backupFiles[path] = files[path]
