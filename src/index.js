@@ -13,7 +13,7 @@ const log = (message) => {
   console.log(`[${chalk.green('metalsmith-incremental')}] ${message}`)
 }
 
-const metalsmithIncremental = (plugin, baseDir, reDep) => (files, metalsmith, done) => {
+const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith, done) => {
   // only enable incremental builds after first build
   if (!isReady) {
     if (plugin.length === 3) {
@@ -27,7 +27,7 @@ const metalsmithIncremental = (plugin, baseDir, reDep) => (files, metalsmith, do
   }
 
   // check dependencies first
-  depGraph(files, modifiedFiles, modifiedDirs, baseDir, reDep)
+  depGraph(files, modifiedFiles, modifiedDirs, baseDir, depCheck)
 
   const backupFiles = {}
   let paths = Object.keys(files)
