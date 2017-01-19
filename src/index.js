@@ -4,14 +4,11 @@ import debounce from 'debounce'
 
 import depGraph from './lib/dep-graph'
 import isModifiedDir from './lib/is-modified-dir'
+import log from './lib/log'
 
 let modifiedFiles = {}
 let modifiedDirs = []
 let isReady = false
-
-const log = (message) => {
-  console.log(`[${chalk.green('metalsmith-incremental')}] ${message}`)
-}
 
 const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith, done) => {
   // only enable incremental builds after first build
