@@ -1,7 +1,9 @@
 import path from 'path'
+import chalk from 'chalk'
 
 import isModifiedDir from './is-modified-dir'
 import getDepCheck from './get-dep-check'
+import log from './log'
 
 const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
   const paths = Object.keys(files)
@@ -53,6 +55,8 @@ const depGraph = (files, modifiedFiles, modifiedDirs, baseDir, depCheck) => {
         paths.splice(i, 1)
         l--
         i = 0
+
+        log(`${chalk.yellow(filePath)} depends on ${chalk.blue(dependency)}`)
         continue
       }
     }
