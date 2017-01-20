@@ -32,7 +32,6 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
     return
   }
 
-  const backupFiles = {}
   let paths = Object.keys(files)
 
   // first add forced globs
@@ -56,7 +55,6 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
 
     if (modifiedFiles[path] || isModifiedDir(path, modifiedDirs)) continue
 
-    backupFiles[path] = files[path]
     // eslint-disable-next-line no-param-reassign
     delete files[path]
   }
@@ -86,16 +84,6 @@ const metalsmithIncremental = (plugin, baseDir, depCheck) => (files, metalsmith,
       if (!modifiedFiles[path]) {
         modifiedFiles[path] = true
       }
-    }
-
-    // restore filtered files from backup
-    paths = Object.keys(backupFiles)
-
-    for (let i = 0, l = paths.length; i < l; i++) {
-      const path = paths[i]
-
-      // eslint-disable-next-line no-param-reassign
-      files[path] = backupFiles[path]
     }
 
     done(err)
