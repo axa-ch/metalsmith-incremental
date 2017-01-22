@@ -1,22 +1,22 @@
 import path from 'path'
 import chalk from 'chalk'
 
-import isModifiedDir from './is-modified-dir'
-import getDepCheck from './get-dep-check'
+import isInDir from './is-in-dir'
+import getDepResolver from './get-dep-resolver'
 import log from './log'
 
-const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCheck) => {
+const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depResolver) => {
   const paths = Object.keys(files)
 
   for (let i = 0, l = paths.length; i < l; i++) {
     const filePath = paths[i]
 
     // eslint-disable-next-line no-param-reassign
-    depCheck = getDepCheck(filePath, depCheck)
+    depResolver = getDepResolver(filePath, depResolver)
 
     // no need to check files without regex
     // no need to check modified files / dirs
-    if (!depCheck || modifiedFiles[filePath] || isModifiedDir(filePath, modifiedDirs)) {
+    if (!depResolver || modifiedFiles[filePath] || isInDir(filePath, modifiedDirs)) {
       paths.splice(i, 1)
       l--
       i--
@@ -29,10 +29,10 @@ const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCh
     let modifiedFilesList
 
     // collect matched dependencies
-    if (typeof depCheck === 'function') {
-      dependencies = depCheck(file, baseDir)
+    if (typeof depResolver === 'function') {
+      dependencies = depResolver(file, baseDir)
     } else {
-      while ((match = depCheck.exec(file.contents)) !== null) {
+      while ((match = depResolver.exec(file.contents)) !== null) {
         dependencies.push(match[1])
       }
     }
@@ -49,8 +49,8 @@ const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depCh
       }
 
       if (modifiedFiles[dependency]
-        || isModifiedDir(dependency, modifiedFilesList || (modifiedFilesList = Object.keys(modifiedFiles)))
-        || isModifiedDir(dependency, modifiedDirs)) {
+        || isInDir(dependency, modifiedFilesList || (modifiedFilesList = Object.keys(modifiedFiles)))
+        || isInDir(dependency, modifiedDirs)) {
         // yes this is changed by reference
         // eslint-disable-next-line no-param-reassign
         modifiedFiles[filePath] = true
