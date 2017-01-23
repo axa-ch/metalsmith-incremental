@@ -63,11 +63,11 @@ let isReady = false
  *
  * @param {Object} [options] - Plugin options hash.
  * @param {string} [options.plugin=filter] - Specify the sub plugin to use - `filter`, `cache` or `watch`.
- * @param {string} [options.baseDir] - The baseDir to which to resolve absolute paths in dependencies.
- * @param {RegExp|Function} [options.depResolver] - A RegExp pattern or callback to resolve dependencies.
- * @param {RenameObject|RenameFunction} [options.rename] - A function or object defining renaming rules.
- * @param {PathsObject|string} [options.paths] - A glob-pattern map which forces updates of mapped files.
- * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes.
+ * @param {string} [options.baseDir] - The baseDir to which to resolve absolute paths in dependencies (`filter` only).
+ * @param {RegExp|Function} [options.depResolver] - A RegExp pattern or callback to resolve dependencies (`filter` only).
+ * @param {RenameObject|RenameFunction} [options.rename] - A function or object defining renaming rules (`cache` only).
+ * @param {PathsObject|string} [options.paths] - A glob-pattern map which forces updates of mapped files (`watch` only).
+ * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes (`watch` only).
  * @returns {Function} - Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
  */
 const metalsmithIncremental = (options) => {
