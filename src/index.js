@@ -177,7 +177,7 @@ const metalsmithIncremental = (options) => {
       for (let i = 0, l = filesToRestoreKeys.length; i < l; i++) {
         const cachedKey = filesToRestoreKeys[i]
 
-        if (files[cachedKey]) {
+        if (files[cachedKey] || isInDir(cachedKey, modifiedDirs)) {
           continue
         } else {
           const renamedKey = resolveRename(cachedKey, rename)
