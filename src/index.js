@@ -11,7 +11,7 @@ import isInDir from './lib/is-in-dir'
 import log from './lib/log'
 
 const defaults = {
-  debounce: 100,
+  delay: 100,
 }
 let modifiedFiles = {}
 let modifiedDirs = []
@@ -161,17 +161,18 @@ const metalsmithIncremental = (options) => {
       }
     }
 
-    if (typeof options.debounce !== 'number') {
+    if (typeof options.delay !== 'number') {
       // eslint-disable-next-line no-param-reassign
-      options.debounce = defaults.debounce
+      options.delay = defaults.delay
     }
 
+    const { delay, paths } = options
     const source = metalsmith.source()
     const watcher = chokidar.watch(source, {
       ignoreInitial: true,
       cwd: source,
     })
-    const debouncedBuild = debounce(triggerBuild, options.debounce)
+    const debouncedBuild = debounce(triggerBuild, delay)
 
     process.on('SIGTERM', stopWatching)
     process.on('SIGINT', stopWatching)
@@ -183,13 +184,13 @@ const metalsmithIncremental = (options) => {
     function triggerBuild() {
       log('start')
 
-      if (options.paths) {
-        const globs = Object.keys(options.paths)
+      if (paths) {
+        const globs = Object.keys(paths)
         const modifiedFilesList = Object.keys(modifiedFiles)
 
         globs.forEach((glob) => {
           if (minimatch.match(modifiedFilesList, glob)) {
-            forceGlobs.push(options.paths[glob])
+            forceGlobs.push(paths[glob])
           }
         })
       }
