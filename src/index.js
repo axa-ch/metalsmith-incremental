@@ -7,6 +7,7 @@ import minimatch from 'minimatch'
 
 import depGraph from './lib/dep-graph'
 import isInDir from './lib/is-in-dir'
+import resolveRename from './lib/resolve-rename'
 import log from './lib/log'
 
 const defaults = {
@@ -144,20 +145,11 @@ const metalsmithIncremental = (options) => {
 
         // if file not found -> may it's renamed
         if (!found && validRename) {
-          if (renameIsFunc) {
-            const extname = path.extname(removedFileKey)
-            const renamed = rename({
-              dirname: path.dirname(removedFileKey),
-              basename: path.basename(removedFileKey, extname),
-              ext: extname,
-            })
+          removedFileKey = resolveRename(removedFileKey, rename)
 
-            removedFileKey = path.join(renamed.dirname, `${renamed.basename}${renamed.ext}`)
-          } else if (renameIsRegex) {
-            removedFileKey = removedFileKey.replace(rename.from, rename.to)
+          if (cached[removedFileKey]) {
+            found = true
           }
-
-          found = !!cached[removedFileKey]
         }
 
         // remove found file
@@ -185,7 +177,7 @@ const metalsmithIncremental = (options) => {
       for (let i = 0, l = filesToRestoreKeys.length; i < l; i++) {
         const cachedKey = filesToRestoreKeys[i]
 
-        if (files[cachedKey]) {
+        if (files[cachedKey] || files(resolveRename(cachedKey, rename))) {
           continue
         }
 
