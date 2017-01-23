@@ -21,6 +21,22 @@ let forceGlobs = []
 let isWatching = false
 let isReady = false
 
+/**
+ * Returns the selected `metalsmith-incremental` subplugin.
+ * Use:
+ * * `filter`: to remove unmodified files from the pipeline
+ * * `cache`: to cache current state in the pipeline and to restore filtered files by `filter`
+ * * `watch`: to start watching for file changes (can be used only once)
+ *
+ * @param {Object} [options] - Plugin options hash.
+ * @param {string} [options.plugin=filter] - Specify the sub plugin to use - `filter`, `cache` or `watch`.
+ * @param {string} [options.baseDir] - The baseDir to which to resolve absolute paths in dependencies.
+ * @param {RegExp|Function} [options.depResolver] - A RegExp pattern or callback to resolve dependencies.
+ * @param {Object|Function} [options.rename] - A function or object defining renaming rules.
+ * @param {Object|string} [options.paths] - A glob-pattern map which for updates of mapped files.
+ * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes.
+ * @returns {Function} - Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
+ */
 const metalsmithIncremental = (options) => {
   const { plugin } = options
   let cached
