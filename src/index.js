@@ -48,6 +48,13 @@ let isReady = false
  */
 
 /**
+ * Paths pattern map to force rebuilding unmodified files.
+ *
+ * @typedef {Object} PathsObject
+ * @property {Glob|string} - A `glob` or `string` map specifying which other files should run through the pipeline.
+ */
+
+/**
  * Returns the selected `metalsmith-incremental` subplugin.
  * Use:
  * * `filter`: to remove unmodified files from the pipeline
@@ -59,7 +66,7 @@ let isReady = false
  * @param {string} [options.baseDir] - The baseDir to which to resolve absolute paths in dependencies.
  * @param {RegExp|Function} [options.depResolver] - A RegExp pattern or callback to resolve dependencies.
  * @param {RenameObject|RenameFunction} [options.rename] - A function or object defining renaming rules.
- * @param {Object|string} [options.paths] - A glob-pattern map which for updates of mapped files.
+ * @param {PathsObject|string} [options.paths] - A glob-pattern map which forces updates of mapped files.
  * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes.
  * @returns {Function} - Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
  */
