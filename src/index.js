@@ -261,30 +261,30 @@ const metalsmithIncremental = (options) => {
       })
     }
 
-    function handleAll(event, path) {
+    function handleAll(event, filePath) {
       switch (event) {
         case 'add':
         case 'change':
-          modifiedFiles[path] = true
+          modifiedFiles[filePath] = true
           break
 
         case 'unlink':
-          removedFiles[path] = true
+          removedFiles[filePath] = true
           break
 
         case 'addDir':
-          modifiedDirs.push(path)
+          modifiedDirs.push(filePath)
           break
 
         case 'unlinkDir':
-          removedDirs.push(path)
+          removedDirs.push(filePath)
           break
 
         default:
           return
       }
 
-      log(`${event} ${chalk.yellow(path)}`)
+      log(`${event} ${chalk.yellow(filePath)}`)
 
       debouncedBuild()
     }
