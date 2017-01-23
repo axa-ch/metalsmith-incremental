@@ -43,6 +43,7 @@
     "chokidar": "^1.6.1",
     "clone": "^2.1.0",
     "debounce": "^1.0.0",
+    "deep-copy": "^1.2.0",
     "deepcopy": "^0.6.3",
     "is-regex": "^1.0.3",
     "minimatch": "^3.0.3"
