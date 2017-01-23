@@ -179,16 +179,8 @@ const metalsmithIncremental = (options) => {
         const cachedKey = filesToRestoreKeys[i]
 
         if (files[cachedKey] || isInDir(cachedKey, modifiedDirs)) {
+          modifiedFiles[cachedKey] = true
           continue
-        } else {
-          const renamedKey = resolveRename(cachedKey, rename)
-
-          if (files[renamedKey]) {
-            delete modifiedFiles[cachedKey]
-            modifiedFiles[renamedKey] = true
-
-            continue
-          }
         }
 
         // eslint-disable-next-line no-param-reassign
