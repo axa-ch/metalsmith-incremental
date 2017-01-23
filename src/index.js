@@ -174,7 +174,7 @@ const metalsmithIncremental = (options) => {
       }
 
       // restore cache
-      const filesToRestore = depp ? clone(cached) : { ...cached }
+      const filesToRestore = deep ? clone(cached) : { ...cached }
       const filesToRestoreKeys = Object.keys(filesToRestore)
 
       for (let i = 0, l = filesToRestoreKeys.length; i < l; i++) {
