@@ -185,6 +185,10 @@ const metalsmithIncremental = (options) => {
       for (let i = 0, l = filesToRestoreKeys.length; i < l; i++) {
         const cachedKey = filesToRestoreKeys[i]
 
+        if (files[cachedKey]) {
+          continue
+        }
+
         // eslint-disable-next-line no-param-reassign
         files[cachedKey] = filesToRestore[cachedKey]
       }
