@@ -2,7 +2,7 @@ import path from 'path'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
-import clone from 'node-clone'
+import clone from 'clone'
 import minimatch from 'minimatch'
 
 import depGraph from './lib/dep-graph'
