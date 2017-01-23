@@ -20,6 +20,7 @@ let removedDirs = []
 let forceGlobs = []
 let isWatching = false
 let isReady = false
+let isRunning = false
 
 /**
  * An object which defines renaming rules.
@@ -85,7 +86,7 @@ const metalsmithIncremental = (options) => {
   }
 
   function filter(files, metalsmith, done) {
-    if (!isReady) {
+    if (!isRunning) {
       done()
       return
     }
@@ -126,7 +127,7 @@ const metalsmithIncremental = (options) => {
 
     const clonedFiles = clone(files)
 
-    if (cached) {
+    if (isRunning) {
       const { rename } = options
       const renameIsFunc = typeof rename === 'function'
       const renameIsRegex = !renameIsFunc && typeof rename === 'object' && rename.from && rename.to
@@ -257,6 +258,7 @@ const metalsmithIncremental = (options) => {
         })
       }
 
+      isRunning = true
       metalsmith.build((err) => {
         if (err) throw err
 
@@ -267,6 +269,8 @@ const metalsmithIncremental = (options) => {
         forceGlobs = []
 
         log('done')
+
+        isRunning = false
       })
     }
 
