@@ -130,6 +130,10 @@ const metalsmithIncremental = (options) => {
       const renameIsRegex = !renameIsFunc && typeof rename === 'object' && rename.from && rename.to
       const validRename = renameIsFunc || renameIsRegex
 
+      if (renameIsRegex && typeof rename.from === 'string') {
+        rename.from = new RegExp(rename.from)
+      }
+
       // delete removed Files
       const removedFilesKeys = Object.keys(removedFiles)
 
