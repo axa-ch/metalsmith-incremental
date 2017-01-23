@@ -22,6 +22,32 @@ let isWatching = false
 let isReady = false
 
 /**
+ * An object which defines renaming rules.
+ *
+ * @typedef {Object} RenameObject
+ * @property {RegExp|string} from - A pattern to match.
+ * @property {string} to - A string to replace matched value.
+ */
+
+/**
+ * An object which define a path.
+ *
+ * @typedef {Object} PathObject
+ * @property {string} path.basename - The name of the file without it's extension.
+ * @property {string} path.dirname - The directory path of the file.
+ * @property {string} path.extname - The file extension (including the dot).
+ */
+
+/**
+ * A callback which defines renaming rules.
+ *
+ * @callback RenameFunction
+ * @param {PathObject} path - The current path of the file.
+ *
+ * @returns {PathObject} path - The new path to be used.
+ */
+
+/**
  * Returns the selected `metalsmith-incremental` subplugin.
  * Use:
  * * `filter`: to remove unmodified files from the pipeline
@@ -32,7 +58,7 @@ let isReady = false
  * @param {string} [options.plugin=filter] - Specify the sub plugin to use - `filter`, `cache` or `watch`.
  * @param {string} [options.baseDir] - The baseDir to which to resolve absolute paths in dependencies.
  * @param {RegExp|Function} [options.depResolver] - A RegExp pattern or callback to resolve dependencies.
- * @param {Object|Function} [options.rename] - A function or object defining renaming rules.
+ * @param {RenameObject|RenameFunction} [options.rename] - A function or object defining renaming rules.
  * @param {Object|string} [options.paths] - A glob-pattern map which for updates of mapped files.
  * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes.
  * @returns {Function} - Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
