@@ -89,6 +89,8 @@ const metalsmithIncremental = (options) => {
       return
     }
 
+    setImmediate(done)
+
     const filesPaths = Object.keys(files)
     const { baseDir, depResolver } = options
 
@@ -195,7 +197,10 @@ const metalsmithIncremental = (options) => {
   }
 
   function watch(files, metalsmith, done) {
-    if (isWatching) return
+    if (isWatching) {
+      done()
+      return
+    }
     isWatching = true
 
     setImmediate(done)
