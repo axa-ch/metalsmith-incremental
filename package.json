@@ -7,7 +7,8 @@
     "build": "babel src --out-dir ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pretest": "npm run build",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
