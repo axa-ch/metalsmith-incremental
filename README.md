@@ -22,36 +22,46 @@ import metalsmith from 'metalsmith'
 // ...
 import incremental from 'metalsmith-incremental'
 
-// wrap slow plugins
-metalsmith.use(incremental(slowPlugin()))
+// filter unmodified files
+metalsmith.use(incremental({ plugin: 'filter' }))
+// run slow plugins
+metalsmith.use(slowPlugin())
+// restore unmodified files
+metalsmith.use(incremental({ plugin: 'cache' }))
+
+// optionally enable watching
+if(process.env.NODE_ENV === 'development') {
+  metalsmith.use(incremental({ plugin: 'watch' }))
+}
 
 // build metalsmith
 metalsmith.build((err) => {
   if (err) throw err
 })
-
-// optionally enable watching
-if(process.env.NODE_ENV === 'development') {
-    incremental.watch(metalsmith)
-}
 ````
 
 3. In case your plugin wraps content which could include other content (dependencies), you can specify custom `RegExp` or `Function`, which should extract those depended files and occashionally rebuild them too.
 
 ````js
 // dependencies with RegEx
-metalsmith.use(incremental(slowPlugin()), /^import ["'](.*)['"]$/mg)
+metalsmith.use(incremental({
+  depResolver: /^import ["'](.*)['"]$/mg
+}))
+metalsmith.use(slowPlugin())
 ````
 
 **Important:** Your RegEx has to define one capturing group (which holds the dependency path data), match global and multiline.
 
 ````js
 // dependencies with Function
-metalsmith.use(incremental(slowPlugin()), (file, baseDir) => {
-  const dependencies = []
-  // do your custom magic to find dependencies
-  return dependencies
-})
+metalsmith.use(incremental({
+  depResolver: (file, baseDir) => {
+    const dependencies = []
+    // do your custom magic to find dependencies
+    return dependencies
+  }
+}))
+metalsmith.use(slowPlugin())
 ````
 
 **Note:** You can also pass a hash of `RegEx` or `Function` by file extension.
@@ -60,38 +70,17 @@ metalsmith.use(incremental(slowPlugin()), (file, baseDir) => {
 ````js
 // optionally enable watching
 if(process.env.NODE_ENV === 'development') {
-    incremental.watch(metalsmith)
+  metalsmith.use(incremental({ plugin: 'watch' }))
 }
 ````
 
-**Note:** You have to pass your current metalsmith instance to watch.
+**Important:** This plugin is designed to be used only with MetalSmith plugins who operate on file basis. Other plugins who depend on `metadata`, etc may break.
 
-**Important:** This plugin is designed to be used only with MetalSmith plugins who operate on file basis. Other plugins who depend on `metadata`, etc will not benefit from this or may break.
+# API
 
-# Options
+Check our [API documentation](./API.md).
 
-The following options hash can be passed to `incremental.watch()` as second argument.
-
-## debounce
-
-How many milliseconds build should be debounced (optional). [default: `100`]
-
-## paths
-
-You can pass a hash of glob maps, which forces to update some other files if the key glob matches (optional).
-
-````js
-{
-  'file(s) to watch': 'file(s) to rebuild'
-}
-````
-
-````js
-{
-  'templates/**/*': '**/*', // every templates changed will trigger a rebuild of all files
-}
-````
-
-# Credit/Inspiration
+# Inspiration
 After we had very long metalsmith builds during development, it was time to seek for change.
-Luckily we have found this inspiring blog post http://www.mograblog.com/2016/11/speed-up-metalsmith.html.
+We have found this inspiring blog post http://www.mograblog.com/2016/11/speed-up-metalsmith.html.
+Though it was far from complete, not mentioning circular references, dependencies, metadata and more very specific stuff, we decided to take the next step.
