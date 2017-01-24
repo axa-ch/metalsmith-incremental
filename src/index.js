@@ -1,8 +1,8 @@
-import path from 'path'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 import clone from 'clone'
+import deepAssign from 'deep-assign'
 import minimatch from 'minimatch'
 
 import depGraph from './lib/dep-graph'
@@ -74,6 +74,7 @@ let isRunning = false
  */
 const metalsmithIncremental = (options) => {
   const { plugin } = options
+  const filtered = {}
   let cached
 
   switch (plugin) {
@@ -118,6 +119,7 @@ const metalsmithIncremental = (options) => {
 
       if (modifiedFiles[filePath] || isInDir(filePath, modifiedDirs)) continue
 
+      filtered[filePath] = files[filePath]
       // eslint-disable-next-line no-param-reassign
       delete files[filePath]
     }
@@ -126,8 +128,7 @@ const metalsmithIncremental = (options) => {
   function cache(files, metalsmith, done) {
     setImmediate(done)
 
-    const { deep } = options
-    const clonedFiles = deep ? clone(files) : { ...files }
+    const clonedFiles = clone(files)
 
     if (isRunning) {
       const { rename } = options
@@ -173,21 +174,32 @@ const metalsmithIncremental = (options) => {
         }
       }
 
-      // restore cache
-      const filesToRestore = deep ? clone(cached) : { ...cached }
-      const filesToRestoreKeys = Object.keys(filesToRestore)
+      // restore filtered files and update by cache
+      const filteredKeys = Object.keys(filtered)
 
-      for (let i = 0, l = filesToRestoreKeys.length; i < l; i++) {
-        const cachedKey = filesToRestoreKeys[i]
+      for (let i = 0, l = filteredKeys.length; i < l; i++) {
+        const filteredKey = filteredKeys[i]
+        let cachedKey = filteredKey
+        let found = !(cachedKey in cached)
 
-        if (files[cachedKey] || isInDir(cachedKey, modifiedDirs)) {
-          modifiedFiles[cachedKey] = true
-          continue
+        if (!found && validRename) {
+          cachedKey = resolveRename(cachedKey, rename)
+
+          found = cachedKey in cached
         }
 
-        // eslint-disable-next-line no-param-reassign
-        files[cachedKey] = filesToRestore[cachedKey]
+        if (found) {
+          // eslint-disable-next-line no-param-reassign
+          files[cachedKey] = deepAssign(filtered[filteredKey], cached[cachedKey])
+        } else {
+          modifiedFiles[cachedKey] = true
+        }
       }
+
+      // update modifiedFiles hash
+      Object.keys(clonedFiles).forEach((key) => {
+        modifiedFiles[key] = true
+      })
     }
 
     cached = {
