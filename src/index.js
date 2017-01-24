@@ -180,7 +180,7 @@ const metalsmithIncremental = (options) => {
       for (let i = 0, l = filteredKeys.length; i < l; i++) {
         const filteredKey = filteredKeys[i]
         let cachedKey = filteredKey
-        let found = !(cachedKey in cached)
+        let found = cachedKey in cached
 
         if (!found && validRename) {
           cachedKey = resolveRename(cachedKey, rename)
