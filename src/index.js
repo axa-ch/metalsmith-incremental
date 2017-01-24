@@ -259,10 +259,10 @@ const metalsmithIncremental = (options) => {
       ...options,
     }
 
-    if (typeof options.path === 'string') {
+    if (typeof options.paths === 'string') {
       // eslint-disable-next-line no-param-reassign
-      options.path = {
-        [options.path]: options.path,
+      options.paths = {
+        [options.paths]: options.paths,
       }
     }
 
