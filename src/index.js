@@ -18,6 +18,7 @@ let modifiedDirs = []
 let removedFiles = {}
 let removedDirs = []
 let forceGlobs = []
+let filtered = {}
 let isWatching = false
 let isReady = false
 let isRunning = false
@@ -74,7 +75,6 @@ let isRunning = false
  */
 const metalsmithIncremental = (options) => {
   const { plugin } = options
-  let filtered = {}
   let cached
 
   switch (plugin) {
@@ -190,9 +190,8 @@ const metalsmithIncremental = (options) => {
 
         if (found) {
           // eslint-disable-next-line no-param-reassign
-          files[cachedKey] = deepAssign(filtered[filteredKey], cached[cachedKey])
-        } else {
-          modifiedFiles[cachedKey] = true
+          files[cachedKey] = filtered[filteredKey]
+          files[cachedKey].contents = cached[cachedKey].contents
         }
       }
 
