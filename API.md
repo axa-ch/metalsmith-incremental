@@ -94,7 +94,7 @@ Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 -   `file` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The currently processed file.
 -   `baseDir` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The supplied `baseDir` by `options.baseDir`.
 
-Returns **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) | null)** dependecies - Returns an array of dependencies (relative to `baseDir`).
+Returns **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) | null)** dependencies - Returns an array of dependencies (relative to `baseDir`).
 
 ## RenameObject
 
@@ -134,5 +134,17 @@ Returns **[PathObject](#pathobject)** path - The new path to be used.
 ## PathsObject
 
 Paths pattern map to force rebuilding unmodified files.
+
+```js
+{
+  'file(s) to watch': 'file(s) to rebuild'
+}
+```
+
+```js
+{
+  'templates/*': '*', // every templates changed will trigger a rebuild of all files
+}
+```
 
 Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
