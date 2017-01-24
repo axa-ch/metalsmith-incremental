@@ -74,7 +74,7 @@ let isRunning = false
  */
 const metalsmithIncremental = (options) => {
   const { plugin } = options
-  const filtered = {}
+  let filtered = {}
   let cached
 
   switch (plugin) {
@@ -195,6 +195,9 @@ const metalsmithIncremental = (options) => {
           modifiedFiles[cachedKey] = true
         }
       }
+
+      // reset filtered
+      filtered = {}
 
       // update modifiedFiles hash
       Object.keys(clonedFiles).forEach((key) => {
