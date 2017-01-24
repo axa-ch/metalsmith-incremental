@@ -2,7 +2,6 @@ import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 import clone from 'clone'
-import deepAssign from 'deep-assign'
 import minimatch from 'minimatch'
 
 import depGraph from './lib/dep-graph'
@@ -69,6 +68,7 @@ let isRunning = false
  * @param {RegExp|Function} [options.depResolver] - A RegExp pattern or callback to resolve dependencies (`filter` only).
  * @param {boolean} [options.deep=false] - Whether to deeply clone files or to shallow copy them (`cache` only).
  * @param {RenameObject|RenameFunction} [options.rename] - A function or object defining renaming rules (`cache` only).
+ * @param {Array} [options.props=['contents']] - An array of property names to sync from cached files to new file (`cache` only).
  * @param {PathsObject|string} [options.paths] - A glob-pattern map which forces updates of mapped files (`watch` only).
  * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes (`watch` only).
  * @returns {Function} - Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
@@ -176,6 +176,7 @@ const metalsmithIncremental = (options) => {
 
       // restore filtered files and update by cache
       const filteredKeys = Object.keys(filtered)
+      let { props } = options
 
       for (let i = 0, l = filteredKeys.length; i < l; i++) {
         const filteredKey = filteredKeys[i]
@@ -189,9 +190,42 @@ const metalsmithIncremental = (options) => {
         }
 
         if (found) {
+          const file = filtered[filteredKey]
+          const cache = cached[cachedKey]
+
+          file.contents = cache.contents
+
+          if (props) {
+            if (!Array.isArray(props)) {
+              props = [props]
+            }
+
+            for (let j = 0, k = props.length; j < k; j++) {
+              const prop = props.length
+
+              if (Array.isArray(prop)) {
+                let tmpFile = file
+                let tmpCache = cache
+
+                for (let n = 0, m = prop.length; n < m; n++) {
+                  const key = prop[n]
+
+                  if (n === m - 1 || !(key in tmpFile)) {
+                    tmpFile[key] = tmpCache[key]
+                    break
+                  } else if (tmpFile[key] && tmpCache[key]) {
+                    tmpFile = tmpFile[key]
+                    tmpCache = tmpCache[key]
+                  }
+                }
+              } else {
+                file[prop] = cache[prop]
+              }
+            }
+          }
+
           // eslint-disable-next-line no-param-reassign
-          files[cachedKey] = filtered[filteredKey]
-          files[cachedKey].contents = cached[cachedKey].contents
+          files[cachedKey] = file
         }
       }
 
