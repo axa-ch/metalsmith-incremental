@@ -9,6 +9,7 @@
 -   [DependencyResolver](#dependencyresolver)
 -   [RenameObject](#renameobject)
 -   [PathObject](#pathobject)
+-   [PropsList](#propslist)
 -   [RenameFunction](#renamefunction)
 -   [PathsObject](#pathsobject)
 
@@ -28,6 +29,7 @@ Use:
     -   `options.baseDir` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** The baseDir to which to resolve absolute paths in dependencies (`filter` only).
     -   `options.depResolver` **([RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) \| [DependencyResolver](#dependencyresolver))?** A RegExp pattern or callback to resolve dependencies (`filter` only).
     -   `options.rename` **([RenameObject](#renameobject) \| [RenameFunction](#renamefunction))?** A function or object defining renaming rules (`cache` only).
+    -   `options.props` **[PropsList](#propslist)?** An array of property names to sync from cached files to new files (`cache` only). (optional, default `['contents']`)
     -   `options.paths` **([PathsObject](#pathsobject) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))?** A glob-pattern map which forces updates of mapped files (`watch` only).
     -   `options.delay` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The number of milliseconds the rebuild is delayed to wait for additional changes (`watch` only). (optional, default `100`)
 
@@ -118,6 +120,28 @@ Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 -   `path.basename` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the file without it's extension.
 -   `path.dirname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The directory path of the file.
 -   `path.extname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The file extension (including the dot).
+
+## PropsList
+
+A single property or list of properties to sync between cached an new files,
+representing either one single property or a complete property path, like:
+
+```js
+var obj = {
+ foo: 1,
+ bar: 2,
+ snafu: {
+   foo: 3,
+   baz: 4
+ }
+}
+
+'foo'  // single property -> obj.foo
+['foo', 'bar']   // property list -> obj.foo, obj.bar
+[['snafu', 'foo']]   // property path -> obj.snafu.foo
+```
+
+Type: ([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>)>)
 
 ## RenameFunction
 
