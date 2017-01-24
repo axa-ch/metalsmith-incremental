@@ -34,7 +34,7 @@ let isRunning = false
  * @param {string} [options.baseDir] - The baseDir to which to resolve absolute paths in dependencies (`filter` only).
  * @param {RegExp|DependencyResolver} [options.depResolver] - A RegExp pattern or callback to resolve dependencies (`filter` only).
  * @param {RenameObject|RenameFunction} [options.rename] - A function or object defining renaming rules (`cache` only).
- * @param {string|Array[string, Array[string]]} [options.props=['contents']] - An array of property names to sync from cached files to new file (`cache` only).
+ * @param {PropsList} [options.props=['contents']] - An array of property names to sync from cached files to new files (`cache` only).
  * @param {PathsObject|string} [options.paths] - A glob-pattern map which forces updates of mapped files (`watch` only).
  * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes (`watch` only).
  * @returns {filter|cache|watch} - Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
@@ -384,6 +384,28 @@ export default metalsmithIncremental
  */
 
 /**
+ * A single property or list of properties to sync between cached an new files,
+ * representing either one single property or a complete property path, like:
+ *
+ * ````js
+ * var obj = {
+ *  foo: 1,
+ *  bar: 2,
+ *  snafu: {
+ *    foo: 3,
+ *    baz: 4
+ *  }
+ * }
+ *
+ * 'foo'  // single property -> obj.foo
+ * ['foo', 'bar']   // property list -> obj.foo, obj.bar
+ * [['snafu', 'foo']]   // property path -> obj.snafu.foo
+ * ````
+ *
+ * @typedef {string|Array.<string|string[]>} PropsList
+ */
+
+/**
  * A callback which defines renaming rules.
  *
  * @callback RenameFunction
@@ -405,6 +427,7 @@ export default metalsmithIncremental
  * {
  *   'templates/*': '*', // every templates changed will trigger a rebuild of all files
  * }
+ * ````
  *
  * @typedef {Object} PathsObject
  * @property {Glob|string} - A `glob` or `string` map specifying which other files should run through the pipeline.
