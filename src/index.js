@@ -363,7 +363,7 @@ export default metalsmithIncremental
  * @param {Object} file - The currently processed file.
  * @param {string} baseDir - The supplied `baseDir` by `options.baseDir`.
  *
- * @returns {Array|null} dependecies - Returns an array of dependencies (relative to `baseDir`).
+ * @returns {Array|null} dependencies - Returns an array of dependencies (relative to `baseDir`).
  */
 
 /**
@@ -394,6 +394,17 @@ export default metalsmithIncremental
 
 /**
  * Paths pattern map to force rebuilding unmodified files.
+ *
+ * ````js
+ * {
+ *   'file(s) to watch': 'file(s) to rebuild'
+ * }
+ * ````
+ *
+ * ````js
+ * {
+ *   'templates/*': '*', // every templates changed will trigger a rebuild of all files
+ * }
  *
  * @typedef {Object} PathsObject
  * @property {Glob|string} - A `glob` or `string` map specifying which other files should run through the pipeline.
