@@ -69,34 +69,31 @@ const metalsmithIncremental = (options) => {
    *
    * @example
    *
-   * Metalsmith.usw(incremental({
-   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   * metalsmith.usw(incremental({
+   *  plugin: 'filter', // default 'filter' -> can be omitted
    *  baseDir: 'your/base/dir',
    * }))
    *
    * @example <caption>Resolving Dependencies by RegExp</caption>
    *
-   * Metalsmith.usw(incremental({
-   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   * metalsmith.usw(incremental({
    *  baseDir: 'your/base/dir',
    *  // important the first capturing group must contain the dependency path
-   *  depResolver: /(?:include|extends)\s+([^\s]+)/mg
+   *  depResolver: /(?:include|extends)\s+([^\s]+)/mg,
    * }))
    *
    * @example <caption>Resolving Dependencies by Hash-Map</caption>
    *
-   * Metalsmith.usw(incremental({
-   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   * metalsmith.usw(incremental({
    *  baseDir: 'your/base/dir',
    *  depResolver: {
-   *    pug: /(?:include|extends)\s+([^\s]+)/mg
-   *  }
+   *    pug: /(?:include|extends)\s+([^\s]+)/mg,
+   *  },
    * }))
    *
    * @example <caption>Resolving Dependencies by Function</caption>
    *
-   * Metalsmith.usw(incremental({
-   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   * metalsmith.usw(incremental({
    *  baseDir: 'your/base/dir',
    *  depResolver: (file, baseDir) {
    *    // read file contents
@@ -106,7 +103,7 @@ const metalsmithIncremental = (options) => {
    *    // ... your custom dependencies resolve algorith here
    *
    *    return dependencies
-   *  }
+   *  },
    * }))
    */
   function filter(files, metalsmith, done) {
@@ -161,29 +158,29 @@ const metalsmithIncremental = (options) => {
    *
    * @example
    *
-   * Metalsmith.use(increment({
-   *  plugin: 'cache'
+   * metalsmith.use(increment({
+   *  plugin: 'cache',
    * })
    *
-   * @example <caption>Renaming Files by RegExp</caption>
+   * @example <caption>Renaming files by RegExp</caption>
    *
-   * Metalsmith.use(increment({
+   * metalsmith.use(increment({
    *  plugin: 'cache',
    *  rename: {
    *    from: /.pug$/,
-   *    to: '.html'
-   *  }
+   *    to: '.html',
+   *  },
    * })
    *
-   * @example <caption>Renaming Files by function</caption>
+   * @example <caption>Renaming files by function</caption>
    *
-   * Metalsmith.use(increment({
+   * metalsmith.use(increment({
    *  plugin: 'cache',
-   *  rename: (path) {
+   *  rename: (path) => {
    *    path.extname = path.extname.replace('.pug', '.html')
    *
    *    return path
-   *  }
+   *  },
    * })
    */
   function cache(files, metalsmith, done) {
@@ -315,6 +312,29 @@ const metalsmithIncremental = (options) => {
    * @param {Object} files
    * @param {MetalSmith} metalsmith
    * @param {Function} done
+   *
+   * @example
+   *
+   * // optionally enable watching
+   * if(process.env.NODE_ENV === 'development') {
+   *  metalsmith.use(incremental({ plugin: 'watch' }))
+   * }
+   *
+   * @example <caption>Set debounce delay in [ms]</caption>
+   *
+   * metalsmith.use(incremental({
+   *  plugin: 'watch',
+   *  debounce: 200,
+   * }))
+   *
+   * @example <caption>Force to rebuild other unmodified files by glob pattern map</caption>
+   *
+   * metalsmith.use(incremental({
+   *  plugin: 'watch',
+   *  paths: {
+   *    'foo/*.md': 'bar/*.pug',
+   *  },
+   * }))
    */
   function watch(files, metalsmith, done) {
     if (isWatching) {
