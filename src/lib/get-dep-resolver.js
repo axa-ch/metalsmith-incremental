@@ -5,6 +5,17 @@ const depResolverDefault = {
   pug: /(?:include|extends)\s+([^\s]+)/mg,
 }
 
+/**
+ * Finds the approbiate dependency resolver for a given file extension.
+ *
+ * **Support File Extensions (by default)**
+ * * .pug, .jade
+ *
+ * @private
+ * @param {string} file - The path of the current file.
+ * @param {RegExp|DependencyResolver|DependencyResolverMap} [depResolver] - A custom dependency resolver to use.
+ * @returns {RegExp|DependencyResolver} - Returns a concrete dependency resolver.
+ */
 const getDepResolver = (file, depResolver) => {
   const type = typeof depResolver
 

@@ -1,5 +1,13 @@
 import path from 'path'
 
+/**
+ * Takes a file path, executes the supplied rename method and returns the renamed path.
+ *
+ * @private
+ * @param {string} file - The file path which may got renamed.
+ * @param {RenameObject|RenameFunction} rename - The method used to resolve renaming of `file`.
+ * @returns {string} - Returns the renamed path.
+ */
 const resolveRename = (file, rename) => {
   const renameIsFunc = typeof rename === 'function'
   const renameIsRegex = !renameIsFunc && typeof rename === 'object' && rename.from && rename.to
