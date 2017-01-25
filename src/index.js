@@ -19,7 +19,6 @@ let removedDirs = []
 let forceGlobs = []
 let filtered = {}
 let isWatching = false
-let isReady = false
 let isRunning = false
 
 /**
@@ -375,7 +374,7 @@ const metalsmithIncremental = (options) => {
     process.on('SIGINT', stopWatching)
     process.on('SIGQUIT', stopWatching)
 
-    watcher.on('ready', () => { isReady = true })
+    watcher.on('ready', () => { log('ready to watch') })
       .on('all', handleAll)
 
     function triggerBuild() {
