@@ -106,12 +106,11 @@ const metalsmithIncremental = (options) => {
    * }))
    */
   function filter(files, metalsmith, done) {
+    setImmediate(done)
+
     if (!isRunning) {
-      done()
       return
     }
-
-    setImmediate(done)
 
     const filesPaths = Object.keys(files)
     const { baseDir, depResolver } = options
@@ -336,13 +335,12 @@ const metalsmithIncremental = (options) => {
    * }))
    */
   function watch(files, metalsmith, done) {
+    setImmediate(done)
+
     if (isWatching) {
-      done()
       return
     }
     isWatching = true
-
-    setImmediate(done)
 
     // eslint-disable-next-line no-param-reassign
     options = {
