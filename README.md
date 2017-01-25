@@ -40,7 +40,7 @@ metalsmith.build((err) => {
 })
 ````
 
-3. In case your plugin wraps content which could include other content (dependencies), you can specify custom `RegExp` or `Function`, which should extract those depended files and occashionally rebuild them too.
+3. In case your plugin wraps content which could include other content (dependencies), you can specify custom `RegExp` or `Function`, which should extract those depended files and occasionally rebuild them too (`.jade` and `.pug` is supported by default).
 
 ````js
 // dependencies with RegEx
@@ -75,6 +75,40 @@ if(process.env.NODE_ENV === 'development') {
 ````
 
 **Important:** This plugin is designed to be used only with MetalSmith plugins who operate on file basis. Other plugins who depend on `metadata`, etc may break.
+
+# Edge Cases
+
+Special circumstances like dependencies, plugins renaming, deleting, adding files should be considered carefully.
+
+## Dependencies
+
+Let's consider you are using a template engine like `PugJS` and you are changing a `partial`, `mixin` or `extend`ed layout.
+This means each file which includes those dependencies needs to be rebuild to, even if they did not change itself.
+
+To solve these you have basically two methods to chose from:
+* [Dependency Resolver config for `filter` plugin](.API.md#dependencyresolver)
+* [Paths Map config for `watch` plugin](.API.md#pathsobject)
+
+**Note**
+
+The `Paths-Map` makes especially sense if you remove some files by `metalsmith-branch` or `metalsmith-ignore` temporarily from the pipeline (which makes them unavailable for dependency resolver) but still want to trigger updates on other files if one of those ignored files has changed.
+
+## Renaming
+
+If your are using any plugin like `metalsmith-markdonw` or any template engine like `PugJS` it's very likly that the original file extension changes from `.md` or `.pug` to `.html`.
+
+To solve these just let the `cache` plugin know those renaming rules:
+* [Rename Object config for `cache` plugin](.API.md#renameobject)
+* [Rename Function config for `cache` plugin](.API.md#renamefunction)
+
+## Circular Dependencies and metadata
+
+We recommend always build metadata from scratch. But if you really have an intensive metadata plugin. You can force updates of file's metadata (not global metadata):
+* [Props List config for `cache` plugin](.API.md#propslist)
+
+## Trouble with `metalsmith-collections`?
+
+Check https://github.com/segmentio/metalsmith-collections/issues/27
 
 # API
 
