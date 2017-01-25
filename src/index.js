@@ -32,7 +32,7 @@ let isRunning = false
  * @param {Object} [options] - Plugin options hash.
  * @param {string} [options.plugin=filter] - Specify the sub plugin to use - `filter`, `cache` or `watch`.
  * @param {string} [options.baseDir] - The baseDir to which to resolve absolute paths in dependencies (`filter` only).
- * @param {RegExp|DependencyResolver} [options.depResolver] - A RegExp pattern or callback to resolve dependencies (`filter` only).
+ * @param {RegExp|DependencyResolver|DependencyResolverMap} [options.depResolver] - A RegExp pattern or callback to resolve dependencies (`filter` only).
  * @param {RenameObject|RenameFunction} [options.rename] - A function or object defining renaming rules (`cache` only).
  * @param {PropsList} [options.props=['contents']] - An array of property names to sync from cached files to new files (`cache` only).
  * @param {PathsObject|string} [options.paths] - A glob-pattern map which forces updates of mapped files (`watch` only).
@@ -364,6 +364,12 @@ export default metalsmithIncremental
  * @param {string} baseDir - The supplied `baseDir` by `options.baseDir`.
  *
  * @returns {Array|null} dependencies - Returns an array of dependencies (relative to `baseDir`).
+ */
+
+/**
+ * An object mapping file extension to related dependency resolving methods.
+ *
+ * @typedef {Object.<string, (RegExp|DependencyResolver)>} DependencyResolverMap
  */
 
 /**
