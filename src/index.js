@@ -66,6 +66,47 @@ const metalsmithIncremental = (options) => {
    * @param {Object} files
    * @param {MetalSmith} metalsmith
    * @param {Function} done
+   *
+   * @example
+   *
+   * Metalsmith.usw(incremental({
+   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   *  baseDir: 'your/base/dir',
+   * }))
+   *
+   * @example <caption>Resolving Dependencies by RegExp</caption>
+   *
+   * Metalsmith.usw(incremental({
+   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   *  baseDir: 'your/base/dir',
+   *  depResolver: /(?:include|extends)\s+([^\s]+)/mg
+   * }))
+   *
+   * @example <caption>Resolving Dependencies by Hash-Map</caption>
+   *
+   * Metalsmith.usw(incremental({
+   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   *  baseDir: 'your/base/dir',
+   *  depResolver: {
+   *    pug: /(?:include|extends)\s+([^\s]+)/mg
+   *  }
+   * }))
+   *
+   * @example <caption>Resolving Dependencies by Function</caption>
+   *
+   * Metalsmith.usw(incremental({
+   *  plugin: 'filter'  // default 'filter' -> can be omitted
+   *  baseDir: 'your/base/dir',
+   *  depResolver: (file, baseDir) {
+   *    // read file contents
+   *    const contents = file.contents
+   *    const dependencies = []
+   *
+   *    // ... your custom dependencies resolve algorith here
+   *
+   *    return dependencies
+   *  }
+   * }))
    */
   function filter(files, metalsmith, done) {
     if (!isRunning) {
