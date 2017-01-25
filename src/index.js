@@ -79,6 +79,7 @@ const metalsmithIncremental = (options) => {
    * Metalsmith.usw(incremental({
    *  plugin: 'filter'  // default 'filter' -> can be omitted
    *  baseDir: 'your/base/dir',
+   *  // important the first capturing group must contain the dependency path
    *  depResolver: /(?:include|extends)\s+([^\s]+)/mg
    * }))
    *
@@ -157,6 +158,33 @@ const metalsmithIncremental = (options) => {
    * @param {Object} files
    * @param {MetalSmith} metalsmith
    * @param {Function} done
+   *
+   * @example
+   *
+   * Metalsmith.use(increment({
+   *  plugin: 'cache'
+   * })
+   *
+   * @example <caption>Renaming Files by RegExp</caption>
+   *
+   * Metalsmith.use(increment({
+   *  plugin: 'cache',
+   *  rename: {
+   *    from: /.pug$/,
+   *    to: '.html'
+   *  }
+   * })
+   *
+   * @example <caption>Renaming Files by function</caption>
+   *
+   * Metalsmith.use(increment({
+   *  plugin: 'cache',
+   *  rename: (path) {
+   *    path.extname = path.extname.replace('.pug', '.html')
+   *
+   *    return path
+   *  }
+   * })
    */
   function cache(files, metalsmith, done) {
     setImmediate(done)
@@ -409,6 +437,9 @@ export default metalsmithIncremental
 
 /**
  * An object mapping file extension to related dependency resolving methods.
+ *
+ * **Important**
+ * The first capturing group of your RegExp needs to contain the dependency path.
  *
  * @typedef {Object.<string, (RegExp|DependencyResolver)>} DependencyResolverMap
  */
