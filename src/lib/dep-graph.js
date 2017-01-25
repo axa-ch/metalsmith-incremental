@@ -5,6 +5,19 @@ import isInDir from './is-in-dir'
 import getDepResolver from './get-dep-resolver'
 import log from './log'
 
+/**
+ * Traverses all `files` of metalsmith and scans them for dependency syntax.
+ * If a modified file is annotated as dependency, then this file is considered as modified too
+ * and will be added to the `modifiedFiles` hash.
+ *
+ * @private
+ * @param {Object} files - A hash of files from Metalsmith.
+ * @param {Object} modifiedFiles - A hash of modified files paths.
+ * @param {Array} modifiedDirs - A hash of modified directories.
+ * @param {Metalsmith} metalsmith - The current Metalsmith instance.
+ * @param {string} baseDir - The base directory to which relative paths are being resolved.
+ * @param {RegExp|DependencyResolver|DependencyResolverMap} depResolver - A RegExp pattern or callback to resolve dependencies.
+ */
 const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depResolver) => {
   const paths = Object.keys(files)
 
