@@ -6,12 +6,13 @@
 -   [filter](#filter)
 -   [cache](#cache)
 -   [watch](#watch)
--   [DependencyResolver](#dependencyresolver)
--   [RenameObject](#renameobject)
--   [PathObject](#pathobject)
--   [PropsList](#propslist)
 -   [RenameFunction](#renamefunction)
 -   [PathsObject](#pathsobject)
+-   [DependencyResolver](#dependencyresolver)
+-   [PropsList](#propslist)
+-   [DependencyResolverMap](#dependencyresolvermap)
+-   [RenameObject](#renameobject)
+-   [PathObject](#pathobject)
 
 ## metalsmithIncremental
 
@@ -27,7 +28,7 @@ Use:
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Plugin options hash.
     -   `options.plugin` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Specify the sub plugin to use - `filter`, `cache` or `watch`. (optional, default `filter`)
     -   `options.baseDir` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** The baseDir to which to resolve absolute paths in dependencies (`filter` only).
-    -   `options.depResolver` **([RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) \| [DependencyResolver](#dependencyresolver))?** A RegExp pattern or callback to resolve dependencies (`filter` only).
+    -   `options.depResolver` **([RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) \| [DependencyResolver](#dependencyresolver) \| [DependencyResolverMap](#dependencyresolvermap))?** A RegExp pattern or callback to resolve dependencies (`filter` only).
     -   `options.rename` **([RenameObject](#renameobject) \| [RenameFunction](#renamefunction))?** A function or object defining renaming rules (`cache` only).
     -   `options.props` **[PropsList](#propslist)?** An array of property names to sync from cached files to new files (`cache` only). (optional, default `['contents']`)
     -   `options.paths` **([PathsObject](#pathsobject) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))?** A glob-pattern map which forces updates of mapped files (`watch` only).
@@ -54,6 +55,53 @@ Removes unmodified files from the pipeline by resolving:
 -   `metalsmith` **MetalSmith** 
 -   `done` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
 
+**Examples**
+
+```javascript
+metalsmith.usw(incremental({
+ plugin: 'filter', // default 'filter' -> can be omitted
+ baseDir: 'your/base/dir',
+}))
+```
+
+_Resolving Dependencies by RegExp_
+
+```javascript
+metalsmith.usw(incremental({
+ baseDir: 'your/base/dir',
+ // important the first capturing group must contain the dependency path
+ depResolver: /(?:include|extends)\s+([^\s]+)/mg,
+}))
+```
+
+_Resolving Dependencies by Hash-Map_
+
+```javascript
+metalsmith.usw(incremental({
+ baseDir: 'your/base/dir',
+ depResolver: {
+   pug: /(?:include|extends)\s+([^\s]+)/mg,
+ },
+}))
+```
+
+_Resolving Dependencies by Function_
+
+```javascript
+metalsmith.usw(incremental({
+ baseDir: 'your/base/dir',
+ depResolver: (file, baseDir) {
+   // read file contents
+   const contents = file.contents
+   const dependencies = []
+
+   // ... your custom dependencies resolve algorith here
+
+   return dependencies
+ },
+}))
+```
+
 ## cache
 
 Caches all files at the specific point in the pipeline and
@@ -70,6 +118,39 @@ restores unmodified files filtered previously by `filter`.
 -   `metalsmith` **MetalSmith** 
 -   `done` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
 
+**Examples**
+
+```javascript
+metalsmith.use(increment({
+ plugin: 'cache',
+})
+```
+
+_Renaming files by RegExp_
+
+```javascript
+metalsmith.use(increment({
+ plugin: 'cache',
+ rename: {
+   from: /.pug$/,
+   to: '.html',
+ },
+})
+```
+
+_Renaming files by function_
+
+```javascript
+metalsmith.use(increment({
+ plugin: 'cache',
+ rename: (path) => {
+   path.extname = path.extname.replace('.pug', '.html')
+
+   return path
+ },
+})
+```
+
 ## watch
 
 Starts watching for file system changes inside `metalsmith.source()` directory.
@@ -85,63 +166,34 @@ Starts watching for file system changes inside `metalsmith.source()` directory.
 -   `metalsmith` **MetalSmith** 
 -   `done` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
 
-## DependencyResolver
+**Examples**
 
-A callback which defines renaming rules.
-
-Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
-
-**Parameters**
-
--   `file` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The currently processed file.
--   `baseDir` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The supplied `baseDir` by `options.baseDir`.
-
-Returns **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) | null)** dependencies - Returns an array of dependencies (relative to `baseDir`).
-
-## RenameObject
-
-An object which defines renaming rules.
-
-Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
-
-**Properties**
-
--   `from` **([RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))** A pattern to match.
--   `to` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A string to replace matched value.
-
-## PathObject
-
-An object which define a path.
-
-Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
-
-**Properties**
-
--   `path.basename` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the file without it's extension.
--   `path.dirname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The directory path of the file.
--   `path.extname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The file extension (including the dot).
-
-## PropsList
-
-A single property or list of properties to sync between cached an new files,
-representing either one single property or a complete property path, like:
-
-```js
-var obj = {
- foo: 1,
- bar: 2,
- snafu: {
-   foo: 3,
-   baz: 4
- }
+```javascript
+// optionally enable watching
+if(process.env.NODE_ENV === 'development') {
+ metalsmith.use(incremental({ plugin: 'watch' }))
 }
-
-'foo'  // single property -> obj.foo
-['foo', 'bar']   // property list -> obj.foo, obj.bar
-[['snafu', 'foo']]   // property path -> obj.snafu.foo
 ```
 
-Type: ([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>)>)
+_Set debounce delay in [ms]_
+
+```javascript
+metalsmith.use(incremental({
+ plugin: 'watch',
+ debounce: 200,
+}))
+```
+
+_Force to rebuild other unmodified files by glob pattern map_
+
+```javascript
+metalsmith.use(incremental({
+ plugin: 'watch',
+ paths: {
+   'foo/*.md': 'bar/*.pug',
+ },
+}))
+```
 
 ## RenameFunction
 
@@ -172,3 +224,70 @@ Paths pattern map to force rebuilding unmodified files.
 ```
 
 Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+## DependencyResolver
+
+A callback which defines renaming rules.
+
+Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+
+**Parameters**
+
+-   `file` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The currently processed file.
+-   `baseDir` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The supplied `baseDir` by `options.baseDir`.
+
+Returns **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) | null)** dependencies - Returns an array of dependencies (relative to `baseDir`).
+
+## PropsList
+
+A single property or list of properties to sync between cached an new files,
+representing either one single property or a complete property path, like:
+
+```js
+var obj = {
+ foo: 1,
+ bar: 2,
+ snafu: {
+   foo: 3,
+   baz: 4
+ }
+}
+
+'foo'  // single property -> obj.foo
+['foo', 'bar']   // property list -> obj.foo, obj.bar
+[['snafu', 'foo']]   // property path -> obj.snafu.foo
+```
+
+Type: ([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>)>)
+
+## DependencyResolverMap
+
+An object mapping file extension to related dependency resolving methods.
+
+**Important**
+The first capturing group of your RegExp needs to contain the dependency path.
+
+Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String), ([RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) \| [DependencyResolver](#dependencyresolver))>
+
+## RenameObject
+
+An object which defines renaming rules.
+
+Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+**Properties**
+
+-   `from` **([RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))** A pattern to match.
+-   `to` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A string to replace matched value.
+
+## PathObject
+
+An object which define a path.
+
+Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+**Properties**
+
+-   `path.basename` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the file without it's extension.
+-   `path.dirname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The directory path of the file.
+-   `path.extname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The file extension (including the dot).
