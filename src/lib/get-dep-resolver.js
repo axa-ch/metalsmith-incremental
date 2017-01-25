@@ -6,7 +6,12 @@ const depResolverDefault = {
 }
 
 const getDepResolver = (file, depResolver) => {
-  if (typeof depResolver === 'function' || isRegex(depResolver)) {
+  const type = typeof depResolver
+
+  if (type === 'function'
+    // eslint-disable-next-line no-param-reassign
+    || (type === 'string' && (depResolver = new RegExp(depResolver, 'gm')))
+    || isRegex(depResolver)) {
     return depResolver
   }
 
@@ -22,9 +27,16 @@ const getDepResolver = (file, depResolver) => {
       key = extension.slice(1)
   }
 
-  if (typeof depResolver === 'object' &&
-    (typeof depResolver[key] === 'function' || isRegex(depResolver[key]))) {
-    return depResolver[key]
+  if (type === 'object') {
+    let depResolverProp = depResolver[key]
+    const propType = typeof depResolverProp
+
+    if (propType === 'function'
+      // eslint-disable-next-line no-param-reassign
+      || (propType === 'string' && (depResolver[key] = (depResolverProp = new RegExp(depResolverProp, 'gm'))))
+      || isRegex(depResolverProp)) {
+      return depResolverProp
+    }
   }
 
   return depResolverDefault[key]
