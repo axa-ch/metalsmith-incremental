@@ -23,6 +23,7 @@ const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depRe
 
   for (let i = 0, l = paths.length; i < l; i++) {
     const filePath = paths[i]
+    let modifiedFilesList
 
     // eslint-disable-next-line no-param-reassign
     depResolver = getDepResolver(filePath, depResolver)
@@ -39,7 +40,6 @@ const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depRe
     const file = files[filePath]
     let match
     let dependencies = []
-    let modifiedFilesList
 
     // collect matched dependencies
     if (typeof depResolver === 'function') {
@@ -62,11 +62,17 @@ const depGraph = (files, modifiedFiles, modifiedDirs, metalsmith, baseDir, depRe
       }
 
       if (modifiedFiles[dependency]
+        // make sure to check dependencies who omit file's extension
         || isInDir(dependency, modifiedFilesList || (modifiedFilesList = Object.keys(modifiedFiles)))
         || isInDir(dependency, modifiedDirs)) {
         // yes this is changed by reference
         // eslint-disable-next-line no-param-reassign
         modifiedFiles[filePath] = true
+
+        // add file path to modified files list
+        if (modifiedFilesList) {
+          modifiedFilesList.push(filePath)
+        }
 
         // IMPORTANT: if matched -> reset loop (cause prior items could have included matched item)
         paths.splice(i, 1)
