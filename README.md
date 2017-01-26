@@ -16,74 +16,76 @@ This will give you insights in your concrete bottleneck.
 
 2. Wrap your plugin middleware with `metalsmith-incremental`, like:
 
-````js
-import metalsmith from 'metalsmith'
-// import any plugins here
-// ...
-import incremental from 'metalsmith-incremental'
+  ````js
+  import metalsmith from 'metalsmith'
+  // import any plugins here
+  // ...
+  import incremental from 'metalsmith-incremental'
 
-// filter unmodified files
-metalsmith.use(incremental({ plugin: 'filter' }))
-// run slow plugins
-metalsmith.use(slowPlugin())
-// restore unmodified files
-metalsmith.use(incremental({ plugin: 'cache' }))
+  // filter unmodified files
+  metalsmith.use(incremental({ plugin: 'filter' }))
+  // run slow plugins
+  metalsmith.use(slowPlugin())
+  // restore unmodified files
+  metalsmith.use(incremental({ plugin: 'cache' }))
 
-// optionally enable watching
-if(process.env.NODE_ENV === 'development') {
-  metalsmith.use(incremental({ plugin: 'watch' }))
-}
+  // optionally enable watching
+  if(process.env.NODE_ENV === 'development') {
+    metalsmith.use(incremental({ plugin: 'watch' }))
+  }
 
-// in case you have restored all files with cache plugin
-// call filter plugin as last middleware
-metalsmith.use(incremental({ plugin: 'filter' }))
+  // in case you have restored all files with cache plugin
+  // call filter plugin as last middleware
+  metalsmith.use(incremental({ plugin: 'filter' }))
 
-// build metalsmith
-metalsmith.build((err) => {
-  if (err) throw err
-})
-````
+  // build metalsmith
+  metalsmith.build((err) => {
+    if (err) throw err
+  })
+  ````
 
 3. In case your plugin wraps content which could include other content (dependencies), you can specify custom `RegExp` or `Function`, which should extract those depended files and occasionally rebuild them too (`.jade` and `.pug` is supported by default).
 
-````js
-// dependencies with RegEx
-metalsmith.use(incremental({
-  depResolver: /^import ["'](.*)['"]$/mg
-}))
-metalsmith.use(slowPlugin())
-````
+  ````js
+  // dependencies with RegEx
+  metalsmith.use(incremental({
+    depResolver: /^import ["'](.*)['"]$/mg
+  }))
+  metalsmith.use(slowPlugin())
+  ````
 
-**Important:** Your RegEx has to define one capturing group (which holds the dependency path data), match global and multiline.
+  **Important:** Your RegEx has to define one capturing group (which holds the dependency path data), match global and multiline.
 
-````js
-// dependencies with Function
-metalsmith.use(incremental({
-  depResolver: (file, baseDir) => {
-    const dependencies = []
-    // do your custom magic to find dependencies
-    return dependencies
-  }
-}))
-metalsmith.use(slowPlugin())
-````
+  ````js
+  // dependencies with Function
+  metalsmith.use(incremental({
+    depResolver: (file, baseDir) => {
+      const dependencies = []
+      // do your custom magic to find dependencies
+      return dependencies
+    }
+  }))
+  metalsmith.use(slowPlugin())
+  ````
 
-**Note:** You can also pass a hash of `RegEx` or `Function` by file extension.
+  **Note:** You can also pass a hash of `RegEx` or `Function` by file extension.
 
 4. Don't forget to enable file watching (if your are in dev mode)
-````js
-// optionally enable watching
-if(process.env.NODE_ENV === 'development') {
-  metalsmith.use(incremental({ plugin: 'watch' }))
-}
-````
+
+  ````js
+  // optionally enable watching
+  if(process.env.NODE_ENV === 'development') {
+    metalsmith.use(incremental({ plugin: 'watch' }))
+  }
+  ````
 
 5. Make sure to write only modified files to disk, by calling `filter` at the last middleware
-````js
-metalsmith.use(incremental({ plugin: 'filter' }))
-````
 
-**Important:** This plugin is designed to be used only with MetalSmith plugins who operate on file basis. Other plugins who depend on `metadata`, etc may break.
+  ````js
+  metalsmith.use(incremental({ plugin: 'filter' }))
+  ````
+
+  **Important:** This plugin is designed to be used only with MetalSmith plugins who operate on file basis. Other plugins who depend on `metadata`, etc may break.
 
 # Edge Cases
 
