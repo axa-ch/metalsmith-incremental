@@ -34,6 +34,10 @@ if(process.env.NODE_ENV === 'development') {
   metalsmith.use(incremental({ plugin: 'watch' }))
 }
 
+// in case you have restored all files with cache plugin
+// call filter plugin as last middleware
+metalsmith.use(incremental({ plugin: 'filter' }))
+
 // build metalsmith
 metalsmith.build((err) => {
   if (err) throw err
@@ -72,6 +76,11 @@ metalsmith.use(slowPlugin())
 if(process.env.NODE_ENV === 'development') {
   metalsmith.use(incremental({ plugin: 'watch' }))
 }
+````
+
+5. Make sure to write only modified files to disk, by calling `filter` at the last middleware
+````js
+metalsmith.use(incremental({ plugin: 'filter' }))
 ````
 
 **Important:** This plugin is designed to be used only with MetalSmith plugins who operate on file basis. Other plugins who depend on `metadata`, etc may break.
