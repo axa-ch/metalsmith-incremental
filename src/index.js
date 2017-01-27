@@ -36,6 +36,7 @@ let isRunning = false
  * @param {PropsList} [options.props=['contents']] - An array of property names to sync from cached files to new files (`cache` only).
  * @param {PathsObject|string} [options.paths] - A glob-pattern map which forces updates of mapped files (`watch` only).
  * @param {number} [options.delay=100] - The number of milliseconds the rebuild is delayed to wait for additional changes (`watch` only).
+ * @param {IncrementalDoneFn} [options.done] - A callback to call after incremental build has finished (same signature as `fn` in `metalsmith.build(fn)` (`watch` only).
  * @returns {filter|cache|watch} - Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
  */
 const metalsmithIncremental = (options) => {
@@ -306,6 +307,7 @@ const metalsmithIncremental = (options) => {
    * **Options**
    * * `paths`
    * * `delay`
+   * * `done`
    *
    * @param {Object} files
    * @param {MetalSmith} metalsmith
@@ -342,12 +344,6 @@ const metalsmithIncremental = (options) => {
     }
     isWatching = true
 
-    const origBuild = metalsmith.build
-    let buildDoneFn
-
-    // eslint-disable-next-line no-param-reassign
-    metalsmith.build = spyBuild
-
     // eslint-disable-next-line no-param-reassign
     options = {
       ...defaults,
@@ -366,7 +362,7 @@ const metalsmithIncremental = (options) => {
       options.delay = defaults.delay
     }
 
-    const { delay, paths } = options
+    const { delay, paths, done: buildDone } = options
     const source = metalsmith.source()
     const watcher = chokidar.watch(source, {
       ignoreInitial: true,
@@ -407,8 +403,8 @@ const metalsmithIncremental = (options) => {
 
         isRunning = false
 
-        if (buildDoneFn) {
-          buildDoneFn(...args)
+        if (buildDone) {
+          buildDone(...args)
         }
       })
     }
@@ -444,14 +440,6 @@ const metalsmithIncremental = (options) => {
     function stopWatching() {
       watcher.close()
       process.exit(0)
-    }
-
-    function spyBuild(fn, ...rest) {
-      if (!buildDoneFn) {
-        buildDoneFn = fn
-      }
-
-      return origBuild.apply(this, [fn, ...rest])
     }
   }
 }
@@ -542,4 +530,12 @@ export default metalsmithIncremental
  *
  * @typedef {Object} PathsObject
  * @property {Glob|string} - A `glob` or `string` map specifying which other files should run through the pipeline.
+ */
+
+/**
+ * A callback to call after incremental build has finished (same signature as `fn` in `metalsmith.build(fn)`.
+ *
+ * @callback IncrementalDoneFn
+ * @param {null|any} error - Set only if an error has occurred.
+ * @param {Object} files - A hash of files build by Metalsmith.
  */
