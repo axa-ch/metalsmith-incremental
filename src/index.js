@@ -342,6 +342,10 @@ const metalsmithIncremental = (options) => {
     }
     isWatching = true
 
+    const origBuild = metalsmith.build
+    let buildDoneFn
+    metalsmith.build = spyBuild
+
     // eslint-disable-next-line no-param-reassign
     options = {
       ...defaults,
@@ -391,8 +395,6 @@ const metalsmithIncremental = (options) => {
 
       isRunning = true
       metalsmith.build((err) => {
-        if (err) throw err
-
         modifiedFiles = {}
         modifiedDirs = []
         removedFiles = {}
@@ -402,6 +404,8 @@ const metalsmithIncremental = (options) => {
         log('done')
 
         isRunning = false
+
+        buildDoneFn(err)
       })
     }
 
@@ -436,6 +440,14 @@ const metalsmithIncremental = (options) => {
     function stopWatching() {
       watcher.close()
       process.exit(0)
+    }
+
+    function spyBuild(fn, ...rest) {
+      if (!buildDoneFn) {
+        buildDoneFn = fn
+      }
+
+      origBuild.apply(metalsmith, [fn, ...rest])
     }
   }
 }
