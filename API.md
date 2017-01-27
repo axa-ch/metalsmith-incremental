@@ -6,13 +6,14 @@
 -   [filter](#filter)
 -   [cache](#cache)
 -   [watch](#watch)
--   [RenameFunction](#renamefunction)
 -   [PathsObject](#pathsobject)
 -   [DependencyResolver](#dependencyresolver)
--   [PropsList](#propslist)
+-   [IncrementalDoneFn](#incrementaldonefn)
+-   [RenameFunction](#renamefunction)
 -   [DependencyResolverMap](#dependencyresolvermap)
 -   [RenameObject](#renameobject)
 -   [PathObject](#pathobject)
+-   [PropsList](#propslist)
 
 ## metalsmithIncremental
 
@@ -33,6 +34,7 @@ Use:
     -   `options.props` **[PropsList](#propslist)?** An array of property names to sync from cached files to new files (`cache` only). (optional, default `['contents']`)
     -   `options.paths` **([PathsObject](#pathsobject) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))?** A glob-pattern map which forces updates of mapped files (`watch` only).
     -   `options.delay` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)?** The number of milliseconds the rebuild is delayed to wait for additional changes (`watch` only). (optional, default `100`)
+    -   `options.done` **[IncrementalDoneFn](#incrementaldonefn)?** A callback to call after incremental build has finished (same signature as `fn` in `metalsmith.build(fn)` (`watch` only).
 
 Returns **([filter](#filter) \| [cache](#cache) \| [watch](#watch))** Returns the specified metalsmith sub plugin - `filter`, `cache` or `watch`.
 
@@ -159,6 +161,7 @@ Starts watching for file system changes inside `metalsmith.source()` directory.
 
 -   `paths`
 -   `delay`
+-   `done`
 
 **Parameters**
 
@@ -195,18 +198,6 @@ metalsmith.use(incremental({
 }))
 ```
 
-## RenameFunction
-
-A callback which defines renaming rules.
-
-Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
-
-**Parameters**
-
--   `path` **[PathObject](#pathobject)** The current path of the file.
-
-Returns **[PathObject](#pathobject)** path - The new path to be used.
-
 ## PathsObject
 
 Paths pattern map to force rebuilding unmodified files.
@@ -238,27 +229,28 @@ Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 
 Returns **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) | null)** dependencies - Returns an array of dependencies (relative to `baseDir`).
 
-## PropsList
+## IncrementalDoneFn
 
-A single property or list of properties to sync between cached an new files,
-representing either one single property or a complete property path, like:
+A callback to call after incremental build has finished (same signature as `fn` in `metalsmith.build(fn)`.
 
-```js
-var obj = {
- foo: 1,
- bar: 2,
- snafu: {
-   foo: 3,
-   baz: 4
- }
-}
+Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
 
-'foo'  // single property -> obj.foo
-['foo', 'bar']   // property list -> obj.foo, obj.bar
-[['snafu', 'foo']]   // property path -> obj.snafu.foo
-```
+**Parameters**
 
-Type: ([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>)>)
+-   `error` **(null | any)** Set only if an error has occurred.
+-   `files` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** A hash of files build by Metalsmith.
+
+## RenameFunction
+
+A callback which defines renaming rules.
+
+Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+
+**Parameters**
+
+-   `path` **[PathObject](#pathobject)** The current path of the file.
+
+Returns **[PathObject](#pathobject)** path - The new path to be used.
 
 ## DependencyResolverMap
 
@@ -291,3 +283,25 @@ Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 -   `path.basename` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the file without it's extension.
 -   `path.dirname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The directory path of the file.
 -   `path.extname` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The file extension (including the dot).
+
+## PropsList
+
+A single property or list of properties to sync between cached an new files,
+representing either one single property or a complete property path, like:
+
+```js
+var obj = {
+ foo: 1,
+ bar: 2,
+ snafu: {
+   foo: 3,
+   baz: 4
+ }
+}
+
+'foo'  // single property -> obj.foo
+['foo', 'bar']   // property list -> obj.foo, obj.bar
+[['snafu', 'foo']]   // property path -> obj.snafu.foo
+```
+
+Type: ([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>)>)
