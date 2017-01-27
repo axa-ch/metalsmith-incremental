@@ -104,6 +104,10 @@ To solve these you have basically two methods to chose from:
 
 The `Paths-Map` makes especially sense if you remove some files by `metalsmith-branch` or `metalsmith-ignore` temporarily from the pipeline (which makes them unavailable for dependency resolver) but still want to trigger updates on other files if one of those ignored files has changed.
 
+**Dynamic Dependencies**
+
+If you dynamically include dependencies the your best bet is again `Paths-Map` config, or your write your very clever dependency resolver function.
+
 ## Renaming
 
 If your are using any plugin like `metalsmith-markdonw` or any template engine like `PugJS` it's very likly that the original file extension changes from `.md` or `.pug` to `.html`.
