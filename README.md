@@ -11,7 +11,7 @@ npm i metalsmith-incremental
 # Usage
 
 1. Find out which is the slow part of your build.
-**Hint:** Go and checkout (`metalsmith-timer`)[https://www.npmjs.com/package/metalsmith-timer]
+**Hint:** Go and checkout [`metalsmith-timer`](https://www.npmjs.com/package/metalsmith-timer)
 This will give you insights in your concrete bottleneck.
 
 2. Wrap your plugin middleware with `metalsmith-incremental`, like:
