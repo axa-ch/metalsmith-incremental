@@ -22,7 +22,7 @@ let isWatching = false
 let isRunning = false
 
 /**
- * Returns the selected `metalsmith-incremental` subplugin.
+ * Returns the selected `metalsmith-incremental` sub plugin.
  * Use:
  * * `filter`: to remove unmodified files from the pipeline
  * * `cache`: to cache current state in the pipeline and to restore filtered files by `filter`
@@ -474,7 +474,7 @@ export default metalsmithIncremental
  */
 
 /**
- * An object which define a path.
+ * An object which defines a path.
  *
  * @typedef {Object} PathObject
  * @property {string} path.basename - The name of the file without it's extension.
@@ -483,7 +483,7 @@ export default metalsmithIncremental
  */
 
 /**
- * A single property or list of properties to sync between cached an new files,
+ * A single property or list of properties to sync between cached and new files,
  * representing either one single property or a complete property path, like:
  *
  * ````js
