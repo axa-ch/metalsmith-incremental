@@ -17,7 +17,7 @@
 
 ## metalsmithIncremental
 
-Returns the selected `metalsmith-incremental` subplugin.
+Returns the selected `metalsmith-incremental` sub plugin.
 Use:
 
 -   `filter`: to remove unmodified files from the pipeline
@@ -274,7 +274,7 @@ Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 
 ## PathObject
 
-An object which define a path.
+An object which defines a path.
 
 Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
@@ -286,7 +286,7 @@ Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 
 ## PropsList
 
-A single property or list of properties to sync between cached an new files,
+A single property or list of properties to sync between cached and new files,
 representing either one single property or a complete property path, like:
 
 ```js
