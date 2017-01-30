@@ -94,7 +94,7 @@ Special circumstances like dependencies, plugins renaming, deleting, adding file
 ## Dependencies
 
 Let's consider you are using a template engine like `PugJS` and you are changing a `partial`, `mixin` or `extend`ed layout.
-This means each file which includes those dependencies needs to be rebuild to, even if they did not change itself.
+This means each file which includes those dependencies needs to be rebuild too, even if they did not change itself.
 
 To solve these you have basically two methods to chose from:
 * [Dependency Resolver config for `filter` plugin](.API.md#dependencyresolver)
@@ -106,11 +106,11 @@ The `Paths-Map` makes especially sense if you remove some files by `metalsmith-b
 
 **Dynamic Dependencies**
 
-If you dynamically include dependencies the your best bet is again `Paths-Map` config, or your write your very clever dependency resolver function.
+If you dynamically include dependencies then your best bet is again `Paths-Map` config, or your write your own very clever dependency resolver function.
 
 ## Renaming
 
-If your are using any plugin like `metalsmith-markdonw` or any template engine like `PugJS` it's very likly that the original file extension changes from `.md` or `.pug` to `.html`.
+If you are using any plugin like `metalsmith-markdonw` or any template engine like `PugJS` it's very likely that the original file extension changes from `.md` or `.pug` to `.html`.
 
 To solve these just let the `cache` plugin know those renaming rules:
 * [Rename Object config for `cache` plugin](.API.md#renameobject)
@@ -118,7 +118,7 @@ To solve these just let the `cache` plugin know those renaming rules:
 
 ## Circular Dependencies and metadata
 
-We recommend always build metadata from scratch. But if you really have an intensive metadata plugin. You can force updates of file's metadata (not global metadata):
+We recommend to always build metadata from scratch. But if you really have an intensive metadata plugin. You can force updates of file's metadata (not global metadata):
 * [Props List config for `cache` plugin](.API.md#propslist)
 
 ## Trouble with `metalsmith-collections`?
