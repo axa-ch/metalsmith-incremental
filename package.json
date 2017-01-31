@@ -1,6 +1,6 @@
 {
   "name": "metalsmith-incremental",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Faster incremental builds for MetalSmith",
   "main": "index.js",
   "scripts": {
