@@ -117,15 +117,17 @@ const metalsmithIncremental = (options) => {
     const { baseDir, depResolver } = options
 
     // first add forced globs
-    if (forceGlobs.length) {
-      forceGlobs.forEach((glob) => {
-        filesPaths.filter(minimatch.filter(glob))
-          .forEach((filePath) => {
-            modifiedFiles[filePath] = true
+    for (let i = 0, l = forceGlobs.length; i < l; i++) {
+      const glob = forceGlobs[i]
+      const globedPaths = filesPaths.filter(minimatch.filter(glob))
 
-            log(`${chalk.yellow(filePath)} force update`)
-          })
-      })
+      for (let j = 0, k = globedPaths.length; j < k; j++) {
+        const filePath = globedPaths[j]
+
+        modifiedFiles[filePath] = true
+
+        log(`${chalk.yellow(filePath)} force update`)
+      }
     }
 
     // second check dependencies
