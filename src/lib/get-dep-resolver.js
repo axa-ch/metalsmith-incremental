@@ -2,7 +2,7 @@ import path from 'path'
 import isRegex from 'is-regex'
 
 const depResolverDefault = {
-  pug: /(?:include|extends)\s+([^\s]+)/mg,
+  pug: /(?:include(?::[^(\s]+(?:\(.*\))?)*|extends)\s+([^\s]+)/mg,
 }
 
 /**
