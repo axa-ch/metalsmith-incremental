@@ -110,7 +110,7 @@ If you dynamically include dependencies then your best bet is again `Paths-Map` 
 
 ## Renaming
 
-If you are using any plugin like `metalsmith-markdonw` or any template engine like `PugJS` it's very likely that the original file extension changes from `.md` or `.pug` to `.html`.
+If you are using any plugin like `metalsmith-markdown` or any template engine like `PugJS` it's very likely that the original file extension changes from `.md` or `.pug` to `.html`.
 
 To solve these just let the `cache` plugin know those renaming rules:
 * [Rename Object config for `cache` plugin](.API.md#renameobject)
